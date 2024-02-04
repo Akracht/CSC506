@@ -1,0 +1,128 @@
+#CSC506_Module 3 Assignment, Option #1: Random Number Generator
+#This code first generates a list of 500 random integers between 1 and 100, then returns the time it takes to sort
+#This list between a variety of sorting methods including selection sort, quick sort, and merge sort.
+
+#Module Imports
+import random
+import time
+import math
+import timeit
+
+# Inputs
+selection_size = 0
+
+# Randomly Generated list of 500 integers.
+list_length = 500
+print("List Length:", list_length)
+
+# List integers range between 1-100 in value
+test_list = [random.randint(1, 100) for _ in range(list_length)]
+print("UNSORTED:", test_list)
+
+
+# Initialization
+
+# Selection Sort Method:
+def selection_sort(array, size):
+    for i in range(size):
+        imin = i
+        for j in range(i + 1, size):
+            if array[j] < array[imin]:
+                imin = j
+        temp = array[i]
+        array[i] = array[imin]
+        array[imin] = temp
+
+
+# Insertion Sort Method
+def insertion_sort(num_list):
+    for i in range(1, len(num_list)):
+        j = i
+        while j > 0 and num_list[j] < num_list[j - 1]:
+            num_list[j], num_list[j - 1] = num_list[j - 1], num_list[j]
+            j -= 1
+
+
+# Quick Sort Method
+def partition(numbers, start_index, end_index):
+    midpoint = start_index + (end_index - start_index) // 2
+    pivot = numbers[midpoint]
+
+    low = start_index
+    high = end_index
+
+    done = False
+    while not done:
+        while numbers[low] < pivot:
+            low = low + 1
+
+        while pivot < numbers[high]:
+            high = high - 1
+
+        if low >= high:
+            done = True
+        else:
+            numbers[low], numbers[high] = numbers[high], numbers[low]
+            low = low + 1
+            high = high - 1
+
+    return high
+
+
+def quicksort(numbers, start_index, end_index):
+    if end_index <= start_index:
+        return
+
+    high = partition(numbers, start_index, end_index)
+    quicksort(numbers, start_index, high)
+    quicksort(numbers, high + 1, end_index)
+
+
+# Merge Sort Method
+def merge_sort(a, n):
+    if n > 1:
+        m = n // 2
+        # divide the list into two sublists
+        l1 = a[:m]
+        n1 = len(l1)
+        l2 = a[m:]
+        n2 = len(l2)
+        # recursively calling the function for sublists
+        merge_sort(l1, n1)
+        merge_sort(l2, n2)
+        i = j = k = 0
+        while i < n1 and j < n2:
+            if l1[i] <= l2[j]:
+                a[k] = l1[i]
+                i = i + 1
+            else:
+                a[k] = l2[j]
+                j = j + 1
+            k = k + 1
+        while i < n1:
+            a[k] = l1[i]
+            i = i + 1
+            k = k + 1
+        while j < n2:
+            a[k] = l2[j]
+            j = j + 1
+            k = k + 1
+
+# Outputs
+
+# Time selection sort
+n = len(test_list)
+selection_time = timeit.timeit(lambda: selection_sort(test_list.copy(), n), number=10000)
+print('Selection Sort Time: {:.4f} seconds'.format(selection_time))
+
+# Time insertion sort
+insertion_time = timeit.timeit(lambda: insertion_sort(test_list.copy()), number=10000)
+print('Insertion Sort Time: {:.4f} seconds'.format(insertion_time))
+
+# Time quicksort
+quicksort_time = timeit.timeit(lambda: quicksort(test_list.copy(), 0, len(test_list) - 1), number=10000)
+print('Quicksort Time: {:.4f} seconds'.format(quicksort_time))
+
+# Time Merge Sort
+merge_time = timeit.timeit(lambda: merge_sort(test_list.copy(), len(test_list) - 1), number=10000)
+print('Merge Sort Time: {:.4f} seconds'.format(merge_time))
